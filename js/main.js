@@ -10,6 +10,15 @@ var app = {
             "</div>"
         $('body').html(html);
         $('.search-key').on('keyup', $.proxy(this.findByName, this));
+        $(".search-key").focusout(function () {
+
+            if ($('.search-key').val().trim().length == 0) {
+                $('.employee-list').html('');
+            }
+
+        });
+
+
     },
     showAlert: function (message, title) {
         if (navigator.notification) {
