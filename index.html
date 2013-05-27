@@ -1,12 +1,25 @@
+<!DOCTYPE html>
 <html>
 <body>
-    <input id="l" type="button" name="name" value="location" />
-    <br />
-    <input type="text" id="fn" name="name" value=" " placeholder="first name" />
-    <input type="text" id="ln" name="name" value=" " placeholder="last name" />
-    <input type="tel" id="wp" name="name" value=" " placeholder="work phone" />
-    <input type="tel" id="mp" name="name" value=" " placeholder="mobile phone" />
-    <input type="button" id="c" name="name" value="Add to Contacts" />
+    <ul style="list-style-type:none; line-height:35px;">
+        <li>
+            <input type="text" id="fn" name="first_name" placeholder="First name" /></li>
+        <li>
+            <input type="text" id="ln" name="last_name" placeholder="Last name" /></li>
+        <li>
+            <input type="tel" id="wp" name="work_phone" placeholder="Work phone" /></li>
+        <li>
+            <input type="tel" id="mp" name="mobile_phone" placeholder="Mobile phone" /></li>
+        <li>
+            <input type="button" id="c" value="Add to Contacts" /></li>
+        <li>
+            <input id="l" type="button" value="location" /></li>
+        <li>
+            <input id="cam" type="button" value="take pic" /></li>
+        <li>
+            <img class='employee-image' src="img/Ryan_Howard.jpg" />
+        </li>
+    </ul>
     <script src="lib/jquery-1.8.2.min.js"></script>
     <script src="js/storage/ls-store.js"></script>
     <script src="js/main.js"></script>
@@ -24,21 +37,58 @@
         }
 
 
+
+        $('#cam').click(function () {
+            try {
+                if (!navigator.camera) {
+                    app.showAlert("Camera API not supported", "Error");
+                    return;
+                }
+                var options = { quality: 50,
+                    destinationType: Camera.DestinationType.DATA_URL,
+                    sourceType: 1,      // 0:Photo Library, 1=Camera, 2=Saved Photo Album
+                    encodingType: 0     // 0=JPG 1=PNG
+                };
+
+                navigator.camera.getPicture(
+                        function (imageData) {
+                            $('.employee-image', this.el).attr('src', "data:image/jpeg;base64," + imageData);
+                        },
+                        function () {
+                            app.showAlert('Error taking picture', 'Error');
+                        },
+                        options);
+                showalert('success', 'camera done');
+
+            } catch (e) {
+                showalert('error', 'e.Message');
+            }
+
+
+        });
+
         $('#c').click(function () {
 
-            console.log('addToContacts');
-            if (!navigator.contacts) {
-                showalert("Contacts API not supported", "Error");
-                return;
+            try {
+
+
+                //console.log('addToContacts');
+                if (!navigator.contacts) {
+                    showalert("Contacts API not supported", "Error" + $('#mp').val());
+                    return;
+                }
+                var contact = navigator.contacts.create();
+                contact.name = { givenName: $('#fn').val(), familyName: $('#ln').val() };
+                var phoneNumbers = [];
+                phoneNumbers[0] = new ContactField('work', $('#wp').val(), false);
+                phoneNumbers[1] = new ContactField('mobile', $('#mp').val(), true); // preferred number
+                contact.phoneNumbers = phoneNumbers;
+                contact.save();
+                showalert('success', 'Contact saved');
+            } catch (e) {
+
+                showalert('error', 'e.Message');
             }
-            var contact = navigator.contacts.create();
-            contact.name = { givenName: $('#fn').val(), familyName: $('#ln').val() };
-            var phoneNumbers = [];
-            phoneNumbers[0] = new ContactField('work', $('#wp').val(), false);
-            phoneNumbers[1] = new ContactField('mobile', $('#mp').val(), true); // preferred number
-            contact.phoneNumbers = phoneNumbers;
-            contact.save();
-            console.log('Contact saved');
         });
 
         $('#l').click(function () {
