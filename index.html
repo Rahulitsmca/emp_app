@@ -1,11 +1,57 @@
 <html>
 <body>
-<script src="lib/jquery-1.8.2.min.js"></script>
-<script src="js/storage/ls-store.js"></script>
-<script src="js/main.js"></script>
-<script src="phonegap.js"></script>
-
+    <input id="l" type="button" name="name" value="location" />
+    <br />
+    <input type="text" id="fn" name="name" value=" " placeholder="first name" />
+    <input type="text" id="ln" name="name" value=" " placeholder="last name" />
+    <input type="tel" id="wp" name="name" value=" " placeholder="work phone" />
+    <input type="tel" id="mp" name="name" value=" " placeholder="mobile phone" />
+    <input type="button" id="c" name="name" value="Add to Contacts" />
+    <script src="lib/jquery-1.8.2.min.js"></script>
+    <script src="js/storage/ls-store.js"></script>
+    <script src="js/main.js"></script>
+    <script src="phonegap.js"></script>
     <script type="text/javascript">
+
+        function showalert(title, message) {
+
+            if (navigator.notification) {
+                navigator.notification.alert(message, null, title, 'OK');
+            } else {
+                alert(title ? (title + ": " + message) : message);
+            }
+
+        }
+
+
+        $('#c').click(function () {
+
+            console.log('addToContacts');
+            if (!navigator.contacts) {
+                showalert("Contacts API not supported", "Error");
+                return;
+            }
+            var contact = navigator.contacts.create();
+            contact.name = { givenName: $('#fn').val(), familyName: $('#ln').val() };
+            var phoneNumbers = [];
+            phoneNumbers[0] = new ContactField('work', $('#wp').val(), false);
+            phoneNumbers[1] = new ContactField('mobile', $('#mp').val(), true); // preferred number
+            contact.phoneNumbers = phoneNumbers;
+            contact.save();
+            console.log('Contact saved');
+        });
+
+        $('#l').click(function () {
+            console.log('addLocation');
+            navigator.geolocation.getCurrentPosition(
+            function (position) {
+                //$('.location', this.el).html(position.coords.latitude + ',' + position.coords.longitude);
+                showalert('location', position.coords.latitude + ',' + position.coords.longitude);
+            },
+            function () {
+                showalert('Error getting', ' location');
+            });
+        });
     </script>
 </body>
 </html>

@@ -7,7 +7,7 @@ var app = {
             "<div class='search-view'>" +
             "<input class='search-key'/>" +
             "<ul class='employee-list'></ul>" +
-            "</div>"
+            "</div>  " 
         $('body').html(html);
         $('.search-key').on('keyup', $.proxy(this.findByName, this));
         $(".search-key").focusout(function () {
@@ -44,7 +44,8 @@ var app = {
     initialize: function () {
         var self = this;
         this.store = new LocalStorageStore(function () {
-            self.renderHomeView();
+            //self.renderHomeView();
+
         });
     }
 
